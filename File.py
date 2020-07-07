@@ -5,7 +5,7 @@ import hashlib
 import pathlib
 
 
-# 2020年6月21日11:00:57
+# 2020年7月7日10:48:36
 class File:
     def __init__(self, filePath):
         if not isinstance(filePath, str):
@@ -130,6 +130,8 @@ class File:
             shutil.copy2(self.path, dist.path, follow_symlinks=False)
         else:
             shutil.copytree(self.path, dist.path, symlinks=False)
+        
+        return dist
 
     def moveTo(self, dist):
         dist = dist if isinstance(dist, File) else File(dist)
@@ -141,6 +143,8 @@ class File:
 
         shutil.move(self.path, dist.path)
         # os.renames(self.path, dist.path)
+
+        return dist
 
     @property
     def path(self):

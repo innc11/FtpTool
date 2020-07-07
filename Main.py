@@ -6,6 +6,7 @@ import json
 from ftplib import FTP
 from File import File
 from ftplib import error_perm
+from tempfile import TemporaryDirectory
 from Aftp import Aftp
 
 programDir = File(os.path.split(os.path.abspath(sys.argv[0]))[0])
@@ -46,13 +47,16 @@ if len(host)==0 or len(user)==0 or len(passwd)==0 or port==0 or len(local)==0 or
 else:
 	now = time.strftime(config["time_format"], time.localtime())
 
-	biFile = File(local).child(config["build_info_file"])
+	with TemporaryDirectory() as td:
+		srcDir = File(local).copyTo(td)
 
-	if config["build_info_file"] != "" and biFile.exists:
-		biFile.put(biFile.content.replace(config["build_info_kw"], now))
+		biFile = srcDir.child(config["build_info_file"])
 
-	with Aftp(host, port, user, passwd, config["ignore_files"]) as ftp:
-		ftp.upload(local, remote)
+		if config["build_info_file"] != "" and biFile.exists:
+			biFile.put(biFile.content.replace(config["build_info_kw"], now))
+
+		with Aftp(host, port, user, passwd, config["ignore_files"]) as ftp:
+			ftp.upload(srcDir.path, remote)
 
 if len(config["anykey_tip"])>0:
 	input(config["anykey_tip"])

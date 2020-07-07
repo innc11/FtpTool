@@ -88,7 +88,7 @@ class Aftp:
 		if self.isIgnored(file):
 			return
 		
-		print(f"upload {file.relativePath()} => {remote}", end="")
+		print(f"upload {file.relativePath(self.baseDir)} => {remote}", end="")
 
 		fd = open(local, 'rb')
 		self.ftp.storbinary('STOR '+remote, fd)
